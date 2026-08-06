@@ -146,4 +146,28 @@ public sealed class ContatoTests
           erros.First()
       );
     }
+
+    [TestMethod]
+    public void Cadastrar_ContatoComEmailSemDominio()
+    {
+
+        // Arrange
+        Contato contato = new Contato(
+            "Kauan",
+            "kauazindelas145@",
+            "(49) 98883-1234",
+            null,
+            string.Empty
+        );
+        
+        // Act
+        List<string> erros = contato.Validar();
+
+        // Assert
+        Assert.HasCount(1, erros);
+        Assert.AreEqual(
+          "O campo \"E-mail\" deve conter um endereço de e-mail válido.",
+          erros.First()
+      );
+    }
 }

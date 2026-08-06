@@ -170,4 +170,23 @@ public sealed class ContatoTests
           erros.First()
       );
     }
+
+    [TestMethod]
+    public void Cadastrar_ContatoComTelefoneFixoFormatoValido()
+    {
+        // Arrange
+        Contato contato = new Contato(
+            "Kauan",
+            "kauazindelas145@gmail.com",
+            "(11) 3333-4444",
+            null,
+            string.Empty
+        );
+        
+        // Act
+        List<string> erros = contato.Validar();
+
+        // Assert
+        Assert.HasCount(0, erros);
+    }
 }

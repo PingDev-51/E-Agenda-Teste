@@ -159,7 +159,7 @@ public sealed class ContatoTests
             null,
             string.Empty
         );
-        
+
         // Act
         List<string> erros = contato.Validar();
 
@@ -178,11 +178,30 @@ public sealed class ContatoTests
         Contato contato = new Contato(
             "Kauan",
             "kauazindelas145@gmail.com",
-            "(11) 3333-4444",
+            "(49) 8883-1234",
             null,
             string.Empty
         );
-        
+
+        // Act
+        List<string> erros = contato.Validar();
+
+        // Assert
+        Assert.HasCount(0, erros);
+    }
+
+    [TestMethod]
+    public void Cadastrar_ContatoComCelularFixoFormatoValido()
+    {
+        // Arrange
+        Contato contato = new Contato(
+            "Kauan",
+            "kauazindelas145@gmail.com",
+            "(49) 98883-1234",
+            null,
+            string.Empty
+        );
+
         // Act
         List<string> erros = contato.Validar();
 

@@ -1,0 +1,59 @@
+
+using eAgenda.Infra.Compartilhado.Orm;
+using eAgenda.WebApp;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
+namespace eAgenda.Testes.E2E.Compartilhado;
+
+public sealed class TestApplicationFactory : WebApplicationFactory<EntryPoint>
+{
+    private readonly string nomeBanco;
+    protected InMemoryDatabaseRoot dbRoot;
+    public string UrlBase { get; }
+
+    public TestApplicationFactory()
+    {
+        nomeBanco = $"e2e-{Guid.NewGuid():N}";
+
+        UseKestrel(0);
+        StartServer();
+
+        UrlBase = ObterUrlKestrel();
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseEnvironment("Testing");
+        builder.UseSetting("Infra:NewRelic:Enabled", "False");
+        builder.ConfigureServices(services =>
+        {
+            services.RemoveAll<DbContextOptions<EAgendaDbContext>>();
+            services.RemoveAll<IDbContextOptionsConfiguration<EAgendaDbContext>>();
+
+            services.AddDbContext<EAgendaDbContext>(options =>
+            {
+                options.UseInMemoryDatabase(nomeBanco, dbRoot);
+            });
+        });
+    }
+
+    private string ObterUrlKestrel()
+    {
+        IServer servidor = Services.GetRequiredService<IServer>();
+
+        IServerAddressesFeature? enderecos = servidor.Features.Get<IServerAddressesFeature>();
+
+        if (enderecos is null)
+            throw new InvalidOperationException("Não foi possível obter a URL do servidor");
+
+        return enderecos.Addresses.Single();
+    }
+}

@@ -191,7 +191,7 @@ public sealed class ContatoTests
     }
 
     [TestMethod]
-    public void Cadastrar_ContatoComCelularFixoFormatoValido()
+    public void Cadastrar_ContatoComCelularFormatoValido()
     {
         // Arrange
         Contato contato = new Contato(
@@ -207,5 +207,28 @@ public sealed class ContatoTests
 
         // Assert
         Assert.HasCount(0, erros);
+    }
+
+    [TestMethod]
+    public void Cadastrar_ContatoTelefoneEmFormatoInvalido()
+    {
+        // Arrange
+        Contato contato = new Contato(
+            "Kauan",
+            "kauazindelas145@gmail.com",
+            "49988831234",
+            null,
+            string.Empty
+        );
+
+        // Act
+        List<string> erros = contato.Validar();
+
+        // Assert
+        Assert.HasCount(1, erros);
+        Assert.AreEqual(
+            "O campo \"Telefone\" deve estar no formato (XX) XXXX-XXXX ou (XX) XXXXX-XXXX.",
+            erros.First()
+        );
     }
 }

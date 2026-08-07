@@ -1,6 +1,7 @@
 using eAgenda.Aplicacao.Modulos.ModuloContato;
 using eAgenda.Dominio.Modulos.ModuloCompromisso;
 using eAgenda.Dominio.Modulos.ModuloContato;
+using FluentAssertions;
 using FluentResults;
 using Moq;
 
@@ -63,5 +64,46 @@ public sealed class ServicoContatoTests
         Assert.Contains("Já existe", resultado.Errors.Single().Message);
 
         repositorioContato.Verify(r => r.Cadastrar(It.IsAny<Contato>()), Times.Never);
+    }
+
+    [TestMethod]
+    public void Editar_Contato_ComDadosValidos()
+    {
+        // Arrange
+        Guid contatoId = Guid.CreateVersion7();
+
+        Mock<IRepositorioContato> repositorioContato = new();
+        Mock<IRepositorioCompromisso> repositorioCompromisso = new();
+
+        repositorioContato.Setup(r => r.SelecionarTodos()).Returns([]);
+
+        repositorioContato
+            .Setup(r => r.Editar(contatoId, It.IsAny<Contato>()))
+            .Returns(true);
+
+        ServicoContato servicoContato = new(
+            repositorioContato.Object,
+            repositorioCompromisso.Object
+        );
+
+        // Act
+        Result resultado = servicoContato.Editar(
+            new EditarContatoDto(
+                contatoId,
+                "Neymar",
+                "neymar@gmail.com",
+                "(49) 98883-1234",
+                "Jogador",
+                "Santos"
+            )
+        );
+
+        // Assert
+        resultado.IsSuccess.Should().BeTrue();
+
+        repositorioContato.Verify(
+            r => r.Editar(contatoId, It.IsAny<Contato>()),
+            Times.Once
+        );
     }
 }

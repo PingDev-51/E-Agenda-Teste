@@ -231,4 +231,26 @@ public sealed class ContatoTests
             erros.First()
         );
     }
+
+    [TestMethod]
+    public void Atualizar_ContatoComDadosValido()
+    {
+        // Arranjo
+          Contato contato = new Contato(
+            "Kauan",
+            "kauazindelas145@gmail.com",
+            "49988831234",
+            null,
+            string.Empty
+        );
+
+        Contato contatoAtualizado = new Contato("Kauan S.", "kauazindelas1453@gmail.com", "(49) 00000-1234", null, string.Empty);
+
+        // Ação
+        contato.Atualizar(contatoAtualizado);
+        List<string> erros = contato.Validar();
+
+        // Assert
+        Assert.HasCount(0, erros);
+    }
 }

@@ -275,7 +275,7 @@ public sealed class ServicoContatoTests
     public void Excluir_ContatosSemCompromissosVinculados()
     {
         // Arrange
-        Contato contato = new("Kauan S.","kauazindelas145@gmail.com", "(49) 98883-1234", null, string.Empty);
+        Contato contato = new("Kauan S.", "kauazindelas145@gmail.com", "(49) 98883-1234", null, string.Empty);
 
         Mock<IRepositorioContato> repositorioContato = new();
         Mock<IRepositorioCompromisso> repositorioCompromisso = new();
@@ -301,5 +301,36 @@ public sealed class ServicoContatoTests
         repositorioContato.Verify(
             r => r.Excluir(It.IsAny<Guid>()),
             Times.Once);
+    }
+
+    [TestMethod]
+    public void Excluir_ContatoVinculadaACompromisso_RetornaFalha()
+    {
+        Contato contato = new Contato("Kauan S.", "kauazindelas145@gmail.com", "(49) 98883-1234", null, string.Empty);
+
+        Mock<IRepositorioContato> repositorioContato = new();
+        Mock<IRepositorioCompromisso> repositorioComprimisso = new();
+
+        repositorioContato
+            .Setup(r => r.SelecionarPorId(contato.Id))
+            .Returns(contato);
+
+        repositorioComprimisso
+            .Setup(r => r.SelecionarTodos())
+            .Returns([new Compromisso("Programar", DateTime.Now, new TimeSpan(14, 0, 0), new TimeSpan(16, 0, 0), TipoCompromisso.Presencial, string.Empty, string.Empty, contato)]);
+
+        ServicoContato servicoContato = new ServicoContato(
+            repositorioContato.Object,
+            repositorioComprimisso.Object
+        );
+
+        // Act
+        Result resultado = servicoContato.Excluir(contato.Id);
+
+        // Assert
+        Assert.IsTrue(resultado.IsFailed);
+        Assert.Contains("Não é possível excluir este contato, pois ele possui compromissos vinculados.", resultado.Errors.Single().Message);
+
+        repositorioContato.Verify(r => r.Excluir(contato.Id), Times.Never);
     }
 }

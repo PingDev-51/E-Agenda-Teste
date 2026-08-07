@@ -106,4 +106,53 @@ public sealed class ServicoContatoTests
             Times.Once
         );
     }
+
+    [TestMethod]
+    public void Editar_EmailDuplicado_RetornaFalha()
+    {
+        //Arrange
+        Guid contatoId = Guid.CreateVersion7();
+        Guid outroContatoId = Guid.CreateVersion7();
+
+        Mock<IRepositorioContato> repositorioContato = new();
+        Mock<IRepositorioCompromisso> repositorioCompromisso = new();
+
+        Contato contatoExistente = new(
+            "João",
+            "neymar@gmail.com",
+            "(49) 99999-9999",
+            "Amigo",
+            "Casa"
+        );
+
+        repositorioContato.Setup(r => r.SelecionarTodos()).Returns([contatoExistente]);
+
+        repositorioContato
+            .Setup(r => r.Editar(contatoId, It.IsAny<Contato>()))
+            .Returns(true);
+
+        ServicoContato servicoContato = new(
+            repositorioContato.Object,
+            repositorioCompromisso.Object
+        );
+
+        //Act
+        Result resultado = servicoContato.Editar(
+            new EditarContatoDto(
+                contatoId,
+                "Neymar",
+                "neymar@gmail.com",
+                "(49) 98883-1234",
+                "Jogador",
+                "Santos"
+            )
+        );
+
+        //Assert
+        Assert.IsTrue(resultado.IsFailed);
+        Assert.AreEqual("Email", resultado.Errors.Single().Metadata["Campo"]);
+        Assert.Contains("Já existe", resultado.Errors.Single().Message);
+
+        repositorioContato.Verify(r => r.Editar(It.IsAny<Guid>(), It.IsAny<Contato>()), Times.Never);
+    }
 }

@@ -1,3 +1,4 @@
+using System.Runtime.Versioning;
 using eAgenda.Aplicacao.Modulos.ModuloContato;
 using eAgenda.Dominio.Modulos.ModuloCompromisso;
 using eAgenda.Dominio.Modulos.ModuloContato;
@@ -267,5 +268,38 @@ public sealed class ServicoContatoTests
         repositorioContato.Verify(
             r => r.SelecionarTodos(), Times.Once
         );
+    }
+
+
+    [TestMethod]
+    public void Excluir_ContatosSemCompromissosVinculados()
+    {
+        // Arrange
+        Contato contato = new("Kauan S.","kauazindelas145@gmail.com", "(49) 98883-1234", null, string.Empty);
+
+        Mock<IRepositorioContato> repositorioContato = new();
+        Mock<IRepositorioCompromisso> repositorioCompromisso = new();
+
+        repositorioContato
+            .Setup(r => r.SelecionarPorId(contato.Id))
+            .Returns(contato);
+
+        repositorioCompromisso
+            .Setup(r => r.SelecionarTodos())
+            .Returns([]);
+
+        ServicoContato servicoContato = new(
+            repositorioContato.Object,
+            repositorioCompromisso.Object);
+
+        // Act
+        Result resultado = servicoContato.Excluir(contato.Id);
+
+        // Assert
+        Assert.IsTrue(resultado.IsSuccess);
+
+        repositorioContato.Verify(
+            r => r.Excluir(It.IsAny<Guid>()),
+            Times.Once);
     }
 }

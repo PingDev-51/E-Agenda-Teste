@@ -96,7 +96,20 @@ public sealed class RepositorioContatoEmOrmTests() : RepositorioBaseEmOrmTests
         Assert.AreEqual("NomeAtualizado", contatoSelecionado.Nome);
     }
 
+    [TestMethod]
+    public void SelecionarTodos_CarregaRegistros()
+    {
+        // Arranjo / Ação
+        IList<Contato> contatos = Builder<Contato>
+            .CreateListOfSize(3)
+            .All()
+            .Persist();
 
+        dbContext.ChangeTracker.Clear();
+
+        // Asserção
+        Assert.HasCount(3, repositorioContato.SelecionarTodos());
+    }
 }
 
 

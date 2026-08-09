@@ -108,4 +108,38 @@ public sealed class ContatoE2ETests : E2ETestsBase
         await Expect(Page.GetByText("Nenhum contato cadastrado.", new() { Exact = true }))
             .Not.ToBeVisibleAsync();
     }
+
+
+    [TestMethod]
+    public async Task ImpedirCadastrar_Contato_ComTelefoneInvalido()
+    {
+        // Arrange
+
+        await Page.GotoAsync($"{UrlBase}/Contato/Listar");
+
+        // Act
+        await Page.GetByRole(AriaRole.Link, new() { Name = "Cadastrar Novo" })
+            .ClickAsync();
+
+        await Page.GetByLabel("Nome").FillAsync("Test1");
+        await Page.GetByLabel("E-mail").FillAsync("test@gmail.com");
+        await Page.GetByLabel("Telefone").FillAsync("49000000000");
+        await Page.GetByLabel("Cargo").FillAsync("DEV");
+        await Page.GetByLabel("Empresa").FillAsync("Empresa fantasma");
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Confirmar" })
+            .ClickAsync();
+
+
+        // Assert
+        Assert.AreEqual(
+            "/Contato/Cadastrar",
+            new Uri(Page.Url).AbsolutePath
+        );
+
+        await Expect(Page.GetByText("O campo \"Telefone\" deve estar no formato (XX) XXXX-XXXX ou (XX) XXXXX-XXXX.", new() { Exact = true }))
+            .ToBeVisibleAsync();
+
+        await Expect(Page.GetByText("Nenhum contato cadastrado.", new() { Exact = true }))
+            .Not.ToBeVisibleAsync();
+    }
 }

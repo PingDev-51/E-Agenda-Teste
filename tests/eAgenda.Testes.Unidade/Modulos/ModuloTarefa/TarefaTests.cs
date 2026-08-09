@@ -241,7 +241,7 @@ public sealed class TarefaTests()
     }
 
     [TestMethod]
-    public void TarefaPendente_Concluir()
+    public void TarefaConcluida_Reabrir()
     {
         // Arrange
         Tarefa tarefa = new Tarefa(
@@ -249,12 +249,14 @@ public sealed class TarefaTests()
             PrioridadeTarefa.Alta
         );
 
-        // Act
         tarefa.AlterarConclusaoManual(true);
 
+        // Act
+        tarefa.AlterarConclusaoManual(false);
+
         // Assert
-        Assert.IsTrue(tarefa.Concluida);
-        Assert.AreEqual(100, tarefa.PercentualConcluido);
-        Assert.AreEqual(DateTime.Today, tarefa.DataConclusao);
+        Assert.IsFalse(tarefa.Concluida);
+        Assert.AreEqual(0, tarefa.PercentualConcluido);
+        Assert.IsNull(tarefa.DataConclusao);
     }
 }

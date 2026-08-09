@@ -63,7 +63,6 @@ public sealed class ContatoE2ETests : E2ETestsBase
     }
 
 
-
     [TestMethod]
     public async Task ImpedirCadastrar_Contato_ComEmailJaCadastrado()
     {
@@ -142,4 +141,44 @@ public sealed class ContatoE2ETests : E2ETestsBase
         await Expect(Page.GetByText("Nenhum contato cadastrado.", new() { Exact = true }))
             .Not.ToBeVisibleAsync();
     }
+
+
+    [TestMethod]
+    public async Task DeveEditar_Contato_ComDadosValidos()
+    {
+        // Arrange
+
+        await CadastarContatoAsync("teste", "test@gmail.com", "(00) 00000-0000", "dev", "EmpresaFantasma");
+
+        ContatoFormPage formPage = new(Page, UrlBase);
+        ContatoListarPage listarPage = new(Page, UrlBase);
+
+        await listarPage.EditarAsync("teste");
+
+        // Act
+        await formPage.PreencherAsync("TesteEditado", "test@gmail.com", "(00) 00000-0000", "dev", "EmpresaFantasma");
+        await formPage.ConfirmarAsync();
+
+        // Assert
+        await Expect(Page).ToHaveURLAsync(listarPage.Url);
+        await Expect(listarPage.NomeDoContato("TesteEditado")).ToBeVisibleAsync();
+        await Expect(listarPage.NomeDoContato("teste")).Not.ToBeVisibleAsync();
+    }
+
+
+    private async Task CadastarContatoAsync(string nome, string email, string telefone, string cargo, string empresa)
+    {
+        ContatoFormPage formPage = new(Page, UrlBase);
+
+        await formPage.IrParaCadastroAsync();
+
+        await formPage.PreencherAsync(nome, email, telefone, cargo, empresa);
+
+        await formPage.ConfirmarAsync();
+
+        ContatoListarPage listarPage = new(Page, UrlBase);
+
+        await Expect(Page).ToHaveURLAsync(listarPage.Url);
+    }
+
 }

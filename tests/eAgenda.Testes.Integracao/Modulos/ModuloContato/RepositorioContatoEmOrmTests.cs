@@ -5,7 +5,7 @@ using FizzWare.NBuilder;
 namespace eAgenda.Testes.Integracao.Modulos.ModuloContato;
 
 [TestClass]
-public sealed class RepositorioContatoEmOrmTests(): RepositorioBaseEmOrmTests
+public sealed class RepositorioContatoEmOrmTests() : RepositorioBaseEmOrmTests
 {
     [TestMethod]
     public void CadastrarESelecionarPorId_CarregaRegistro()
@@ -49,7 +49,6 @@ public sealed class RepositorioContatoEmOrmTests(): RepositorioBaseEmOrmTests
             .With(c => c.Email = "test@gmail.com")
             .With(c => c.Cargo = null)
             .With(c => c.Empresa = null)
-
             .Build();
 
         // Ação
@@ -67,6 +66,37 @@ public sealed class RepositorioContatoEmOrmTests(): RepositorioBaseEmOrmTests
         Assert.IsNull(contatoSelecionado.Cargo);
         Assert.IsNull(contatoSelecionado.Empresa);
     }
+
+    [TestMethod]
+    public void Editar_AtualizaRegistroExistente()
+    {
+        // Arranjo
+        Contato contato = Builder<Contato>
+            .CreateNew()
+            .Persist();
+
+        Contato contatoAtualizado = Builder<Contato>
+            .CreateNew()
+            .With(d => d.Nome = "NomeAtualizado")
+            .With(c => c.Telefone = "(00) 00000-0000")
+            .With(c => c.Email = "test@gmail.com")
+            .With(c => c.Cargo = null)
+            .With(c => c.Empresa = null)
+            .Build();
+
+        // Ação
+        bool conseguiuEditar = repositorioContato.Editar(contato.Id, contatoAtualizado);
+        dbContext.ChangeTracker.Clear();
+
+        Contato? contatoSelecionado = repositorioContato.SelecionarPorId(contato.Id);
+
+        // Asserção
+        Assert.IsTrue(conseguiuEditar);
+        Assert.IsNotNull(contatoSelecionado);
+        Assert.AreEqual("NomeAtualizado", contatoSelecionado.Nome);
+    }
+
+
 }
 
 

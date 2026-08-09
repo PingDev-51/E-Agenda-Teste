@@ -36,6 +36,37 @@ public sealed class RepositorioContatoEmOrmTests(): RepositorioBaseEmOrmTests
         Assert.AreEqual("testador", contatoSelecionado.Cargo);
         Assert.AreEqual("Testes", contatoSelecionado.Empresa);
     }
+
+
+    [TestMethod]
+    public void CadastrarESelecionarPorId_SemCamposObrigatorios()
+    {
+        // Arranjo
+        Contato contato = Builder<Contato>
+            .CreateNew()
+            .With(c => c.Nome = "Nome1")
+            .With(c => c.Telefone = "(00) 00000-0000")
+            .With(c => c.Email = "test@gmail.com")
+            .With(c => c.Cargo = null)
+            .With(c => c.Empresa = null)
+
+            .Build();
+
+        // Ação
+        repositorioContato.Cadastrar(contato);
+        dbContext.ChangeTracker.Clear();
+
+        Contato? contatoSelecionado = repositorioContato.SelecionarPorId(contato.Id);
+
+        // Asserção
+        Assert.IsNotNull(contatoSelecionado);
+        Assert.AreEqual(contato.Id, contatoSelecionado.Id);
+        Assert.AreEqual("Nome1", contatoSelecionado.Nome);
+        Assert.AreEqual("(00) 00000-0000", contatoSelecionado.Telefone);
+        Assert.AreEqual("test@gmail.com", contatoSelecionado.Email);
+        Assert.IsNull(contatoSelecionado.Cargo);
+        Assert.IsNull(contatoSelecionado.Empresa);
+    }
 }
 
 

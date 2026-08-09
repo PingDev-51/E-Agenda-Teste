@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using eAgenda.Aplicacao.Modulos.ModuloTarefa;
 using eAgenda.Dominio.Modulos.ModuloTarefa;
 
@@ -203,6 +204,7 @@ public sealed class TarefaTests()
     [TestMethod]
     public void AtualizarTarefa_ComDadosValidos()
     {
+        //Arange
         Tarefa tarefa = new Tarefa(
             "Testar",
             PrioridadeTarefa.Alta
@@ -210,11 +212,49 @@ public sealed class TarefaTests()
 
         Tarefa tarefaAtualizada = new Tarefa("TestarAtualzido", PrioridadeTarefa.Normal);
 
-        // Ação
+        // Act
         tarefa.Atualizar(tarefaAtualizada);
         List<string> erros = tarefa.Validar();
 
         // Assert
         Assert.HasCount(0, erros);
+    }
+
+    [TestMethod]
+    public void ConcluirTarefaPendente()
+    {
+        //Arange
+        Tarefa tarefa = new Tarefa(
+            "Testar",
+            PrioridadeTarefa.Alta
+        );
+
+        //Act
+        tarefa.AlterarConclusaoManual(true);
+        List<string> erros = tarefa.Validar();
+
+        //Assert
+        Assert.IsTrue(tarefa.Concluida);
+        Assert.AreEqual(DateTime.Today, tarefa.DataCriacao);
+        Assert.AreEqual(100, tarefa.PercentualConcluido);
+        Assert.HasCount(0, erros);
+    }
+
+    [TestMethod]
+    public void TarefaPendente_Concluir()
+    {
+        // Arrange
+        Tarefa tarefa = new Tarefa(
+            "Testar",
+            PrioridadeTarefa.Alta
+        );
+
+        // Act
+        tarefa.AlterarConclusaoManual(true);
+
+        // Assert
+        Assert.IsTrue(tarefa.Concluida);
+        Assert.AreEqual(100, tarefa.PercentualConcluido);
+        Assert.AreEqual(DateTime.Today, tarefa.DataConclusao);
     }
 }

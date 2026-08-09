@@ -166,6 +166,45 @@ public sealed class ContatoE2ETests : E2ETestsBase
     }
 
 
+    [TestMethod]
+    public async Task DeveExibir_ListagemDeContatos()
+    {
+        // Arrange
+        await CadastarContatoAsync(
+            "Teste1",
+            "teste1@gmail.com",
+            "(00) 00000-0000",
+            "dev",
+            "Empresa1"
+        );
+
+        await CadastarContatoAsync(
+            "Teste2",
+            "teste2@gmail.com",
+            "(00) 00000-0001",
+            "dev",
+            "Empresa2"
+        );
+
+        ContatoListarPage listarPage = new(Page, UrlBase);
+
+        // Act
+        await listarPage.IrParaAsync();
+
+        // Assert
+        await Expect(Page).ToHaveURLAsync(listarPage.Url);
+
+        await Expect(listarPage.NomeDoContato("Teste1"))
+            .ToBeVisibleAsync();
+
+        await Expect(listarPage.NomeDoContato("Teste2"))
+            .ToBeVisibleAsync();
+
+        await Expect(listarPage.EstadoVazio)
+            .Not.ToBeVisibleAsync();
+    }
+
+
     private async Task CadastarContatoAsync(string nome, string email, string telefone, string cargo, string empresa)
     {
         ContatoFormPage formPage = new(Page, UrlBase);

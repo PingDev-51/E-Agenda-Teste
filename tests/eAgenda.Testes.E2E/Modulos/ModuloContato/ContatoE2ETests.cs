@@ -1,5 +1,6 @@
 namespace eAgenda.Testes.E2E.Modulos.ModuloContato;
 
+using System.Text.RegularExpressions;
 using eAgenda.Testes.E2E.Compartilhado;
 using Microsoft.Playwright;
 
@@ -204,6 +205,30 @@ public sealed class ContatoE2ETests : E2ETestsBase
             .Not.ToBeVisibleAsync();
     }
 
+    [TestMethod]
+    public async Task DeveExcluir_Contato_SemVinculos()
+    {
+        await CadastarContatoAsync("teste", "test@gmail.com", "(00) 00000-0000", "dev", "EmpresaFantasma");
+
+        ContatoListarPage listarPage = new(Page, UrlBase);
+        ContatoExcluirPage excluirPage = new(Page);
+
+        await listarPage.ExcluirAsync("teste");
+
+        // Act
+        await Expect(Page).ToHaveURLAsync(
+            new Regex($"{Regex.Escape(UrlBase)}/Contato/Excluir/.*")
+        );
+
+        await Expect(excluirPage.MensagemConfirmacao).ToBeVisibleAsync();
+
+        await excluirPage.ConfirmarAsync();
+
+        // Assert
+        await Expect(Page).ToHaveURLAsync(listarPage.Url);
+        await Expect(listarPage.NomeDoContato("teste")).Not.ToBeVisibleAsync();
+        await Expect(listarPage.EstadoVazio).ToBeVisibleAsync();
+    }
 
     private async Task CadastarContatoAsync(string nome, string email, string telefone, string cargo, string empresa)
     {

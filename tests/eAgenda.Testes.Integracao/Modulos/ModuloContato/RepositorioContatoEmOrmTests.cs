@@ -96,6 +96,26 @@ public sealed class RepositorioContatoEmOrmTests() : RepositorioBaseEmOrmTests
         Assert.AreEqual("NomeAtualizado", contatoSelecionado.Nome);
     }
 
+
+    [TestMethod]
+    public void Excluir_RemoveRegistroExistente()
+    {
+        // Arranjo
+        Contato contato = Builder<Contato>
+            .CreateNew()
+            .Persist();
+
+        // Ação
+        bool conseguiuExcluir = repositorioContato.Excluir(contato.Id);
+        dbContext.ChangeTracker.Clear();
+
+        Contato? contatoSelecionado = repositorioContato.SelecionarPorId(contato.Id);
+
+        // Asserção
+        Assert.IsTrue(conseguiuExcluir);
+        Assert.IsNull(contatoSelecionado);
+    }
+
     [TestMethod]
     public void SelecionarTodos_CarregaRegistros()
     {
@@ -111,5 +131,3 @@ public sealed class RepositorioContatoEmOrmTests() : RepositorioBaseEmOrmTests
         Assert.HasCount(3, repositorioContato.SelecionarTodos());
     }
 }
-
-

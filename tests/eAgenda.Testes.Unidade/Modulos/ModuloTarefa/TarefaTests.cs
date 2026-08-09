@@ -18,7 +18,25 @@ public sealed class TarefaTests()
         Assert.HasCount(0, erros);
     }
 
-    // cadastro de outros tipos de tarefas
+
+    [TestMethod]
+    public void CadastrarTarefa_DeveNascerPendenteComZeroPorcento()
+    {
+        // Arrange
+        Tarefa tarefa = new Tarefa(
+            "Testar",
+            PrioridadeTarefa.Normal
+        );
+
+        // Assert
+        Assert.IsFalse(tarefa.Concluida);
+        Assert.AreEqual(0, tarefa.PercentualConcluido);
+        Assert.AreEqual(DateTime.Today, tarefa.DataCriacao);
+        Assert.IsNull(tarefa.DataConclusao);
+    }
+
+
+
 
 
 }

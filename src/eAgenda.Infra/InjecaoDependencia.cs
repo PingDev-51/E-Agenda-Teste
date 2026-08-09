@@ -26,7 +26,7 @@ public static class InjecaoDependencia
         ILoggingBuilder logging
     )
     {
-        services.AddSerilogLogger(configuration, logging);
+
 
         services.AddDbContext<EAgendaDbContext>(options =>
        {

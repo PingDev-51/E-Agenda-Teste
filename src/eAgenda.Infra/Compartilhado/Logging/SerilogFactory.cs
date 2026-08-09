@@ -1,13 +1,16 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using Microsoft.Extensions.Configuration;
 
 namespace eAgenda.Infra.Compartilhado.Logging;
 
 public static class SerilogFactory
 {
-    public static Logger Create(IConfiguration configuration)
+    public static Logger Create(
+        IConfiguration configuration,
+        IHostEnvironment environment)
     {
         string caminhoAppData = Environment
             .GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
@@ -22,16 +25,23 @@ public static class SerilogFactory
             .MinimumLevel.Information()
             .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
             .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .WriteTo.File(
+            .WriteTo.Console();
+
+        if (!environment.IsEnvironment("Testing"))
+        {
+            loggerConfiguration.WriteTo.File(
                 caminhoLogs,
                 rollingInterval: RollingInterval.Day,
                 restrictedToMinimumLevel: LogEventLevel.Error
             );
+        }
 
         NewRelicOptions newRelicOptions = configuration
             .GetSection(NewRelicOptions.SectionName)
             .Get<NewRelicOptions>() ?? new NewRelicOptions();
+
+        if (!newRelicOptions.Enabled)
+            return loggerConfiguration.CreateLogger();
 
         if (string.IsNullOrWhiteSpace(newRelicOptions.LicenseKey))
         {

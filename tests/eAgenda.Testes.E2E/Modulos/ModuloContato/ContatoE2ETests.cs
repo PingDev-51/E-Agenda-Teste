@@ -230,6 +230,8 @@ public sealed class ContatoE2ETests : E2ETestsBase
         await Expect(listarPage.EstadoVazio).ToBeVisibleAsync();
     }
 
+    //Adicionar ImpedirExclusão_Contato_ComVinculos
+
     private async Task CadastarContatoAsync(string nome, string email, string telefone, string cargo, string empresa)
     {
         ContatoFormPage formPage = new(Page, UrlBase);
@@ -244,5 +246,4 @@ public sealed class ContatoE2ETests : E2ETestsBase
 
         await Expect(Page).ToHaveURLAsync(listarPage.Url);
     }
-
 }

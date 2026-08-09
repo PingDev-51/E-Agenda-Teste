@@ -161,7 +161,7 @@ public sealed class TarefaTests()
     public void CadastrarTarefa_ComNomeAcimaLimiteMax()
     {
         string nome = new string('K', 101);
-        
+
         // Arrange
         Tarefa tarefa = new Tarefa(
             nome,
@@ -180,4 +180,41 @@ public sealed class TarefaTests()
         );
     }
 
+    [TestMethod]
+    public void CadastrarTarefa_ComPrioridadeForaDaListaPermitida()
+    {
+        //Arange
+        Tarefa tarefa = new Tarefa(
+            "teste",
+            (PrioridadeTarefa)999
+        );
+
+        //Act
+        List<string> erros = tarefa.Validar();
+
+        //Assert
+        Assert.HasCount(1, erros);
+        Assert.AreEqual(
+            "O campo \"Prioridade\" deve ser preenchido.",
+            erros.First()
+        );
+    }
+
+    [TestMethod]
+    public void AtualizarTarefa_ComDadosValidos()
+    {
+        Tarefa tarefa = new Tarefa(
+            "Testar",
+            PrioridadeTarefa.Alta
+        );
+
+        Tarefa tarefaAtualizada = new Tarefa("TestarAtualzido", PrioridadeTarefa.Normal);
+
+        // Ação
+        tarefa.Atualizar(tarefaAtualizada);
+        List<string> erros = tarefa.Validar();
+
+        // Assert
+        Assert.HasCount(0, erros);
+    }
 }

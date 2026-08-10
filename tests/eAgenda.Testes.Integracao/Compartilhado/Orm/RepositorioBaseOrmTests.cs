@@ -11,6 +11,7 @@ using eAgenda.Infra.Modulos.ModuloContato;
 using eAgenda.Infra.Modulos.ModuloDespesa;
 using eAgenda.Infra.Modulos.ModuloTarefa;
 using Microsoft.EntityFrameworkCore;
+using eAgenda.Testes.Integracao.Modulos.ModuloTarefa;
 
 namespace eAgenda.Testes.Integracao.Compartilhado.Orm;
 

@@ -167,6 +167,7 @@ public sealed class ContatoE2ETests : E2ETestsBase
     }
 
 
+
     [TestMethod]
     public async Task DeveExibir_ListagemDeContatos()
     {

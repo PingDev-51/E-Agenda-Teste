@@ -66,11 +66,11 @@ public abstract class RepositorioBaseEmOrmTests
             repositorioContato.Cadastrar);
 
         BuilderSetup.SetCreatePersistenceMethod<IList<Contato>>(
-            contatos =>
+            (Action<IList<Contato>>)(contatos =>
             {
                 foreach (Contato contato in contatos)
-                    repositorioContato.Cadastrar(contato);
-            });
+                    this.repositorioContato.Cadastrar(contato);
+            }));
 
         // Despesa
         repositorioDespesa = new RepositorioDespesaEmOrm(dbContext);
@@ -92,11 +92,11 @@ public abstract class RepositorioBaseEmOrmTests
             repositorioTarefa.Cadastrar);
 
         BuilderSetup.SetCreatePersistenceMethod<IList<Tarefa>>(
-            tarefas =>
+            (Action<IList<Tarefa>>)(tarefas =>
             {
                 foreach (Tarefa tarefa in tarefas)
-                    repositorioTarefa.Cadastrar(tarefa);
-            });
+                    this.repositorioTarefa.Cadastrar(tarefa);
+            }));
     }
 
     [TestCleanup]

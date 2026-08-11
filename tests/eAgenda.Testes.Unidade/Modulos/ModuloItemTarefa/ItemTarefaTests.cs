@@ -79,4 +79,39 @@ public sealed class ItemTarefaTests
        );
     }
 
+    [TestMethod]
+    public void CancluirItem()
+    {
+        // Arrange
+        ItemTarefa itemTarefa = new ItemTarefa(
+            "Testar"
+        );
+
+        itemTarefa.Concluido = true;
+
+        // Act
+        List<string> erros = itemTarefa.Validar();
+
+        // Assert
+        Assert.HasCount(0, erros);
+    }
+
+    [TestMethod]
+    public void AtualizarItemTarefa()
+    {
+        //Arange
+        ItemTarefa itemTarefa = new ("Teste");
+
+        ItemTarefa itemTarefaAtualizada = new ItemTarefa("TestarAtualzido");
+
+        // Act
+        itemTarefa.Atualizar(itemTarefaAtualizada);
+        List<string> erros = itemTarefa.Validar();
+
+        // Assert
+        Assert.HasCount(0, erros);
+    }
+
+
+
 }

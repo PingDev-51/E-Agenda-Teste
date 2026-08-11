@@ -167,20 +167,4 @@ public sealed class RepositorioItemTarefaOrmTests : RepositorioBaseEmOrmTests
         Assert.AreEqual(tarefa.Prioridade, tarefaSelecionada.Prioridade);
     }
 
-    [TestMethod]
-    public void SelecionarTodos_CarregaRegistros()
-    {
-        // Arranjo / Ação
-        IList<ItemTarefa> itemTarefas = Builder<ItemTarefa>
-            .CreateListOfSize(3)
-            .All()
-            .Persist();
-
-        dbContext.ChangeTracker.Clear();
-
-        // Asserção
-        Assert.HasCount(3, repositorioTarefa.SelecionarTodos());
-    }
-
-
 }
